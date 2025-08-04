@@ -32,7 +32,7 @@
 .input{
     background-color: rgb(231, 231, 231);
     font-size: 15px;
-    padding: 18px 298px 18px 20px;
+    margin: 0px 142px;
     border: none;
     display: flex;
 }
