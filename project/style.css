@@ -1,7 +1,6 @@
 *{
     
     padding:0px;
-    
     align-items: center;
     justify-content: center;
 }
@@ -15,6 +14,7 @@
 .logo{
     width: 50%;
     text-align: left;
+    color: #1750a0;
 }
 .login{
     width: 50%;
@@ -29,15 +29,53 @@
 .main{
     text-align: center;
 }
-.input{
-    background-color: rgb(231, 231, 231);
-    font-size: 15px;
-    margin: 0px 142px;
-    border: none;
-    display: flex;
+.h1{
+    padding-top: 30px;
 }
-.submit{
-    border: none;
-    padding: 20px;
-    cursor: pointer;
+.p{
+    padding: 0px 0px 30px 0px;
+}
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 50%;
+  margin: 0 auto;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #eaeaff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  ;
+}
+
+.input-wrapper input {
+  flex: 1;
+  border: none;
+  padding: 15px 15px 15px 40px; /* left padding to make space for icon */
+  font-size: 16px;
+  outline: none;
+  background: transparent;
+  
+}
+
+.input-wrapper button {
+  border: none;
+  padding: 15px 25px;
+  background: #7FA1C3;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.input-wrapper button:hover {
+  background: #6482AD;
+}
+
+.paste-icon {
+  position: absolute;
+  left: 12px;
+  font-size: 18px;
+  color: #7FA1C3;
+  cursor: pointer;
 }
