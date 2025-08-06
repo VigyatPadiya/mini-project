@@ -35,13 +35,13 @@ document.addEventListener("DOMContentLoaded", () => {
       errorDiv.style.position = "relative";
       errorDiv.style.alignItems = "center";
       errorDiv.style.padding = "10px 0px";
-      errorDiv.style.width = "80%";
+      errorDiv.style.width = "89%";
       errorDiv.style.margin = "0 auto";
       errorDiv.style.borderRadius = "10px";
       errorDiv.style.overflow = "hidden";
       errorDiv.style.background = "#FAD4D4";
       errorDiv.style.boxShadow = "0 2px 6px rgba(0, 0, 0, 0.1)";
-      errorDiv.style.color = "#F47C7C";
+      errorDiv.style.color = "#e03c3cff";
       errorDiv.innerText = "Enter valid URL";
 
       const form = document.querySelector("#video-container");
@@ -57,6 +57,18 @@ document.addEventListener("DOMContentLoaded", () => {
       const errorDiv = document.createElement("div");
       errorDiv.classList.add("error-msg");
       errorDiv.innerText = "Invalid YouTube URL";
+      errorDiv.style.display = "flex";
+      errorDiv.style.position = "relative";
+      errorDiv.style.alignItems = "center";
+      errorDiv.style.padding = "10px 0px";
+      errorDiv.style.width = "89%";
+      errorDiv.style.margin = "0 auto";
+      errorDiv.style.borderRadius = "10px";
+      errorDiv.style.overflow = "hidden";
+      errorDiv.style.background = "#FAD4D4";
+      errorDiv.style.boxShadow = "0 2px 6px rgba(0, 0, 0, 0.1)";
+      errorDiv.style.color = "#e03c3cff";
+
       const form = document.querySelector("#video-container");
       form.appendChild(errorDiv);
       return;
