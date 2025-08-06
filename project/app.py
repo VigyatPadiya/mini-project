@@ -1,37 +1,41 @@
-from flask import Flask, request, send_file, render_template_string
-from yt_dlp import YoutubeDL
-import os
-import uuid
+from flask import Flask, request, send_file, render_template
+import yt_dlp
 import tempfile
+import os
 
 app = Flask(__name__)
 
-# Read the HTML directly from the file in the same directory
-def get_index_html():
-    with open("index.html", "r", encoding="utf-8") as f:
-        return f.read()
-
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/')
 def index():
-    if request.method == 'POST':
-        url = request.form['url']
-        temp_dir = tempfile.gettempdir()
-        filename = f"{uuid.uuid4()}.mp4"
-        filepath = os.path.join(temp_dir, filename)
+    return render_template("index.html")  # Make sure index.html exists in /templates/
 
-        ydl_opts = {
-            'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4',
-            'outtmpl': filepath,
-            'merge_output_format': 'mp4',
-            'quiet': True,
-        }
+@app.route('/download', methods=['POST'])
+def download_video():
+    url = request.form.get('url')
+    itag = request.form.get('itag')
 
-        with YoutubeDL(ydl_opts) as ydl:
-            ydl.download([url])
+    if not url or not itag:
+        return "Missing URL or itag", 400
 
-        return send_file(filepath, as_attachment=True, download_name='video.mp4')
+    # Temp download path
+    temp_dir = tempfile.gettempdir()
 
-    return render_template_string(get_index_html())
+    ydl_opts = {
+        'format': f'{itag}+bestaudio/best',
+        'merge_output_format': 'mp4',
+        'outtmpl': os.path.join(temp_dir, '%(title)s.%(ext)s'),
+        'quiet': True,
+    }
 
-if __name__ == '__main__':
+    try:
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            info = ydl.extract_info(url, download=True)
+            filename = ydl.prepare_filename(info)
+
+        return send_file(filename, as_attachment=True)
+
+    except Exception as e:
+        return f"Error downloading video: {str(e)}", 500
+
+if __name__ == "__main__":
     app.run(debug=True)
