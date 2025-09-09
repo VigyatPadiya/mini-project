@@ -1,35 +1,191 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+{% extends "base.html" %}
 
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-<body>
-    <nav class="navbar">
-        <h2 class="logo">YT VIDEOS</h2>
-        <div class="login">
-        <button id="#"class="btn">Sign in</button>
-        </div>
-    </nav>
-    <hr>
-    <div class="color">
-    <div class="main">
-        <h1 class="h1">Download Youtube Videos</h1>
-        <p class="p">Free Online YouTube Video Downloader | HD & Full HD Quality</p>
-        <div class="input">
-        <form class="input-wrapper">
-            <input type="text" placeholder="Paste video URL..." name="url" id="input"/>
-            <i class="fa-solid fa-paste paste-icon" id="icon"></i>
-            <button id="btnn">Download</button>
-        </form>
-        <div id="video-container"></div>
-        </div>
+{% block title %}YouTube Downloader - Home{% endblock %}
+
+{% block extra_css %}
+<style>
+  .dropzone.dragover {
+    border-color: #38bdf8;
+    background: rgba(56, 189, 248, .1);
+  }
+  
+  #loader {
+    z-index: 9999;
+  }
+  
+  .glass-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(12px);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+  <div class="glass-card rounded-2xl shadow-xl p-8 mb-8">
+    <h2 class="text-2xl font-bold mb-6 text-sky-400 text-center">Download YouTube Videos</h2>
+    <p class="text-center text-slate-300 mb-6">Free Online YouTube Video Downloader | HD & Full HD Quality</p>
+
+    <div class="mb-6">
+      <div class="relative">
+        <input type="text" id="input" placeholder="Paste YouTube URL here..." 
+               class="w-full rounded-xl bg-slate-800 border border-sky-400 text-white p-4 pr-20 focus:ring-2 focus:ring-sky-500 focus:outline-none">
+        <button id="paste-btn" class="absolute right-2 top-2 p-2 text-sky-400 hover:text-sky-300">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+          </svg>
+        </button>
+      </div>
+      <button id="fetch-btn" class="w-full mt-4 py-3 rounded-xl bg-sky-500 hover:bg-sky-600 text-white font-bold shadow-lg transition">
+        Fetch Video
+      </button>
     </div>
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
-    </div>
-</body>
-</html>
+
+    <div id="video-container"></div>
+  </div>
+</div>
+
+<!-- Loader -->
+<div id="loader" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+  <div class="glass-card rounded-2xl p-6 flex flex-col items-center">
+    <div class="w-12 h-12 border-4 border-sky-400 border-t-transparent rounded-full animate-spin mb-4"></div>
+    <p id="loader-text" class="text-sky-400 font-semibold">Loading...</p>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  function showLoader(message) {
+    const loader = document.getElementById("loader");
+    document.getElementById("loader-text").textContent = message;
+    loader.classList.remove("hidden");
+  }
+
+  function hideLoader() {
+    const loader = document.getElementById("loader");
+    loader.classList.add("hidden");
+  }
+
+  document.getElementById("paste-btn").addEventListener("click", async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      document.getElementById("input").value = text;
+    } catch (err) {
+      alert("Clipboard access failed. Please try again.");
+    }
+  });
+
+  function isValidYouTubeUrl(url) {
+    const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$/;
+    return youtubeRegex.test(url);
+  }
+
+  document.getElementById("fetch-btn").addEventListener("click", async function () {
+    const url = document.getElementById("input").value.trim();
+    const container = document.getElementById("video-container");
+    container.innerHTML = "";
+
+    if (!url) {
+      container.innerHTML = `<div class="p-3 bg-red-500/20 border border-red-500/50 rounded-lg text-red-300">Please enter a YouTube URL</div>`;
+      return;
+    }
+
+    if (!isValidYouTubeUrl(url)) {
+      container.innerHTML = `<div class="p-3 bg-red-500/20 border border-red-500/50 rounded-lg text-red-300">Please enter a valid YouTube URL</div>`;
+      return;
+    }
+
+    try {
+      showLoader("Fetching video info...");
+
+      const res = await fetch("/info", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url })
+      });
+
+      // Don't hide the loader yet - wait until we've processed the response
+      const data = await res.json();
+      
+      if (data.error) {
+        hideLoader();
+        container.innerHTML = `<div class="p-3 bg-red-500/20 border border-red-500/50 rounded-lg text-red-300">${data.error}</div>`;
+        return;
+      }
+
+      // Video info container
+      const videoDiv = document.createElement("div");
+      videoDiv.classList.add("glass-card", "p-6", "mt-6");
+
+      const title = document.createElement("h3");
+      title.classList.add("text-xl", "font-bold", "mb-4", "text-sky-400");
+      title.textContent = data.title;
+      videoDiv.appendChild(title);
+
+      const thumbnail = document.createElement("img");
+      thumbnail.src = data.thumbnail;
+      thumbnail.classList.add("w-full", "max-w-md", "mx-auto", "rounded-xl", "mb-4");
+      videoDiv.appendChild(thumbnail);
+
+      // Quality buttons
+      const qualityBox = document.createElement("div");
+      qualityBox.classList.add("grid", "grid-cols-2", "sm:grid-cols-3", "md:grid-cols-4", "gap-3", "mt-4");
+
+      const seenResolutions = new Set();
+      data.video_formats.forEach(f => {
+        const resLabel = `${f.height || "?"}p`;
+
+        if (seenResolutions.has(resLabel)) return;
+        seenResolutions.add(resLabel);
+
+        const qBtn = document.createElement("button");
+        qBtn.textContent = resLabel;
+        qBtn.classList.add("py-2", "px-4", "rounded-xl", "border", "border-sky-400", "text-sky-400", "hover:bg-sky-400", "hover:text-white", "transition");
+        
+        qBtn.addEventListener("click", async () => {
+          try {
+            showLoader(`Downloading ${resLabel}...`);
+
+            const res = await fetch("/download", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ url, format_id: f.format_id })
+            });
+
+            if (!res.ok) {
+              const errorData = await res.json();
+              hideLoader();
+              alert(errorData.error || "Download failed.");
+              return;
+            }
+
+            const blob = await res.blob();
+            hideLoader();
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(blob);
+            a.download = `${data.title}.mp4`;
+            a.click();
+          } catch (err) {
+            hideLoader();
+            alert("Error during download.");
+          }
+        });
+
+        qualityBox.appendChild(qBtn);
+      });
+
+      videoDiv.appendChild(qualityBox);
+      container.appendChild(videoDiv);
+      
+      // Now hide the loader after we've displayed the video info
+      hideLoader();
+
+    } catch (err) {
+      hideLoader();
+      container.innerHTML = `<div class="p-3 bg-red-500/20 border border-red-500/50 rounded-lg text-red-300">Error fetching video info.</div>`;
+    }
+  });
+</script>
+{% endblock %}

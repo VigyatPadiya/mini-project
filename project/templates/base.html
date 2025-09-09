@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}YouTube Downloader{% endblock %}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f1f5f9;
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(12px);
+    }
+  </style>
+  {% block extra_css %}{% endblock %}
+</head>
+
+<body class="min-h-screen flex flex-col bg-gradient-to-br from-slate-900 to-slate-800 text-slate-100">
+  <!-- Flash Messages -->
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <div class="fixed top-4 right-4 z-50 space-y-2">
+        {% for message in messages %}
+          <div class="glass-card rounded-xl p-4 border border-sky-400 text-sky-300 shadow-lg">
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <!-- Navbar -->
+  <nav class="flex items-center justify-between px-4 py-4 md:px-16 bg-sky-900 rounded-b-lg relative">
+    <!-- Logo / Title -->
+    <div class="text-xl font-semibold text-white">YouTube Downloader</div>
+
+    <!-- Desktop Menu -->
+    <div class="hidden md:flex items-center space-x-6 text-white font-medium">
+      {% if username %}
+      <!-- Display username when logged in (before Home) -->
+      <div class="text-sky-300 font-medium">
+        Welcome, {{ username }}
+      </div>
+      {% endif %}
+      
+      <a href="{{ url_for('index') }}"
+        class="hover:text-sky-400 {% if request.path == url_for('index') %}text-sky-400{% endif %}">Home</a>
+      <a href="{{ url_for('about') }}"
+        class="hover:text-sky-400 {% if request.path == url_for('about') %}text-sky-400{% endif %}">About Us</a>
+
+      {% if username %}
+      {% if session.get('is_admin') %}
+      <a href="{{ url_for('admin') }}"
+        class="hover:text-sky-400 {% if request.path == url_for('admin') %}text-sky-400{% endif %}">Admin</a>
+      {% endif %}
+      <a href="{{ url_for('history') }}"
+        class="hover:text-sky-400 {% if request.path == url_for('history') %}text-sky-400{% endif %}">History</a>
+      <a href="{{ url_for('logout') }}" class="hover:text-sky-400">Logout</a>
+      {% else %}
+      <a href="{{ url_for('login') }}"
+        class="hover:text-sky-400 {% if request.path == url_for('login') %}text-sky-400{% endif %}">Login</a>
+      {% endif %}
+    </div>
+
+    <!-- Hamburger (Mobile Only) -->
+    <div class="md:hidden">
+      <button id="menu-toggle" class="text-white focus:outline-none">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Mobile Menu Dropdown - Fixed positioning -->
+    <div id="mobile-menu"
+      class="absolute top-full right-0 mt-0 w-48 bg-slate-800 rounded-lg shadow-lg py-2 flex-col space-y-2 text-white font-medium hidden md:hidden z-50">
+      {% if username %}
+      <!-- Display username in mobile menu (before Home) -->
+      <div class="block px-4 py-2 text-sky-300 font-medium border-b border-slate-700">
+        Welcome, {{ username }}
+      </div>
+      {% endif %}
+      
+      <a href="{{ url_for('index') }}"
+        class="block px-4 py-2 hover:bg-slate-700 {% if request.path == url_for('index') %}bg-slate-700{% endif %}">Home</a>
+      <a href="{{ url_for('about') }}"
+        class="block px-4 py-2 hover:bg-slate-700 {% if request.path == url_for('about') %}bg-slate-700{% endif %}">About
+        Us</a>
+
+      {% if username %}
+      {% if session.get('is_admin') %}
+      <a href="{{ url_for('admin') }}"
+        class="block px-4 py-2 hover:bg-slate-700 {% if request.path == url_for('admin') %}bg-slate-700{% endif %}">Admin</a>
+      {% endif %}
+      <a href="{{ url_for('history') }}"
+        class="block px-4 py-2 hover:bg-slate-700 {% if request.path == url_for('history') %}bg-slate-700{% endif %}">History</a>
+      <a href="{{ url_for('logout') }}" class="block px-4 py-2 hover:bg-slate-700">Logout</a>
+      {% else %}
+      <a href="{{ url_for('login') }}"
+        class="block px-4 py-2 hover:bg-slate-700 {% if request.path == url_for('login') %}bg-slate-700{% endif %}">Login</a>
+            {% endif %}
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="flex-1 p-6">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="text-center text-xs text-slate-400 py-4">
+    ©
+    <script>document.write(new Date().getFullYear())</script> YouTube Downloader
+  </footer>
+
+  <script>
+    // Hamburger menu toggle
+    const toggleBtn = document.getElementById('menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    toggleBtn.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+
+    // Close menu when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!mobileMenu.classList.contains('hidden') &&
+        !mobileMenu.contains(e.target) &&
+        !toggleBtn.contains(e.target)) {
+        mobileMenu.classList.add('hidden');
+      }
+    });
+  </script>
+
+  {% block scripts %}{% endblock %}
+</body>
+
+</html>

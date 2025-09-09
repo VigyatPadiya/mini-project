@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}YouTube Downloader - Admin{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+  <h1 class="text-3xl font-bold mb-8 text-sky-400">Admin Dashboard</h1>
+  
+  <!-- Stats Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="glass-card rounded-2xl shadow-xl p-6">
+      <h3 class="text-lg font-semibold mb-2 text-sky-300">Total Downloads</h3>
+      <p class="text-3xl font-bold">{{ stats.total_downloads }}</p>
+    </div>
+    
+    <div class="glass-card rounded-2xl shadow-xl p-6">
+      <h3 class="text-lg font-semibold mb-2 text-sky-300">Total Users</h3>
+      <p class="text-3xl font-bold">{{ stats.total_users }}</p>
+    </div>
+    
+    <div class="glass-card rounded-2xl shadow-xl p-6">
+      <h3 class="text-lg font-semibold mb-2 text-sky-300">Recent Activity</h3>
+      <p class="text-3xl font-bold">{{ stats.recent_downloads|length }}</p>
+    </div>
+  </div>
+  
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <!-- Recent Downloads -->
+    <div class="glass-card rounded-2xl shadow-xl p-6">
+      <h2 class="text-xl font-bold mb-4 text-sky-400">Recent Downloads</h2>
+      
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead>
+            <tr class="bg-slate-800">
+              <th class="p-3 text-left">User</th>
+              <th class="p-3 text-left">Video</th>
+              <th class="p-3 text-left">Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for download in stats.recent_downloads %}
+            <tr class="border-b border-slate-700">
+              <td class="p-3">{{ download.user }}</td>
+              <td class="p-3 truncate max-w-xs">{{ download.video_title }}</td>
+              <td class="p-3">{{ download.download_date }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <!-- User Management -->
+    <div class="glass-card rounded-2xl shadow-xl p-6">
+      <h2 class="text-xl font-bold mb-4 text-sky-400">User Management</h2>
+      
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead>
+            <tr class="bg-slate-800">
+              <th class="p-3 text-left">Username</th>
+              <th class="p-3 text-left">Downloads</th>
+              <th class="p-3 text-left">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for user in users %}
+            <tr class="border-b border-slate-700">
+              <td class="p-3">{{ user.username }}</td>
+              <td class="p-3">{{ user.download_count }}</td>
+              <td class="p-3">
+                {% if not user.is_admin %}
+                <form method="POST" action="{{ url_for('delete_user', user_id=user.id) }}" class="inline">
+                  <button type="submit" class="text-red-400 hover:text-red-300">Delete</button>
+                </form>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

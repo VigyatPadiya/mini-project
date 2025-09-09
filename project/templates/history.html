@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}YouTube Downloader - History{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+  <h1 class="text-3xl font-bold mb-8 text-sky-400">Download History</h1>
+  
+  {% if downloads %}
+  <div class="glass-card rounded-2xl shadow-xl p-6">
+    <div class="overflow-x-auto">
+      <table class="w-full">
+        <thead>
+          <tr class="bg-slate-800">
+            <th class="p-3 text-left">Video Title</th>
+            <th class="p-3 text-left">Quality</th>
+            <th class="p-3 text-left">Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for download in downloads %}
+          <tr class="border-b border-slate-700">
+            <td class="p-3">{{ download.video_title }}</td>
+            <td class="p-3">{{ download.quality }}</td>
+            <td class="p-3">{{ download.download_date }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% else %}
+  <div class="glass-card rounded-2xl shadow-xl p-8 text-center">
+    <h2 class="text-xl font-semibold mb-4 text-sky-400">No download history yet</h2>
+    <p class="mb-6">Your downloaded videos will appear here once you start using the service.</p>
+    <a href="{{ url_for('index') }}" class="inline-block py-2 px-6 rounded-xl bg-sky-500 hover:bg-sky-600 text-white font-bold shadow-lg transition">
+      Start Downloading
+    </a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

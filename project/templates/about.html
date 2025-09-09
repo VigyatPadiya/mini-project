@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}YouTube Downloader - About Us{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+  <div class="glass-card rounded-2xl shadow-xl p-8 mb-8">
+    <h1 class="text-3xl font-bold mb-6 text-sky-400 text-center">About YouTube Downloader</h1>
+
+    <p class="mb-6 text-lg">
+      YouTube Downloader is a powerful, user-friendly tool designed to help you download YouTube videos
+      in various formats and resolutions. Whether you need to save educational content, music videos,
+      or tutorials, our platform provides a seamless experience.
+    </p>
+
+    <div class="grid md:grid-cols-2 gap-8 mb-8">
+      <div class="glass-card rounded-xl p-6">
+        <h2 class="text-xl font-semibold mb-4 text-sky-400">Our Mission</h2>
+        <p>
+          To simplify video downloading for everyone, providing a secure, reliable platform
+          that works across all your devices without requiring additional software.
+        </p>
+      </div>
+
+      <div class="glass-card rounded-xl p-6">
+        <h2 class="text-xl font-semibold mb-4 text-sky-400">Why Choose Us</h2>
+        <ul class="list-disc pl-5 space-y-2">
+          <li>Fast and efficient downloads</li>
+          <li>Multiple quality options</li>
+          <li>Secure processing</li>
+          <li>User-friendly interface</li>
+          <li>No registration required for basic use</li>
+        </ul>
+      </div>
+    </div>
+
+    <h2 class="text-2xl font-semibold mb-4 text-sky-400">Supported Formats</h2>
+
+    <div class="overflow-x-auto mb-8">
+      <table class="w-full">
+        <thead>
+          <tr class="bg-slate-800">
+            <th class="p-3 text-left">Quality</th>
+            <th class="p-3 text-left">Resolution</th>
+            <th class="p-3 text-left">Format</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-b border-slate-700">
+            <td class="p-3 font-medium">High Definition</td>
+            <td class="p-3">720p, 1080p, 1440p</td>
+            <td class="p-3">MP4</td>
+          </tr>
+          <tr class="border-b border-slate-700">
+            <td class="p-3 font-medium">Standard Definition</td>
+            <td class="p-3">360p, 480p</td>
+            <td class="p-3">MP4</td>
+          </tr>
+          <tr>
+            <td class="p-3 font-medium">Ultra High Definition</td>
+            <td class="p-3">4K, 8K</td>
+            <td class="p-3">MP4 (when available)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="glass-card rounded-xl p-6">
+      <h2 class="text-xl font-semibold mb-4 text-sky-400">Get Started</h2>
+      <p class="mb-4">
+        Ready to download videos? It's simple! Just head to our <a href="{{ url_for('index') }}" class="text-sky-400 hover:underline">home page</a>,
+        paste the YouTube URL, select your desired quality, and let YouTube Downloader do the rest.
+      </p>
+      <a href="{{ url_for('index') }}" class="inline-block py-2 px-6 rounded-xl bg-sky-500 hover:bg-sky-600 text-white font-bold shadow-lg transition">
+        Download Videos Now
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}
